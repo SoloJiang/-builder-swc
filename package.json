@@ -2,7 +2,7 @@
   "name": "@builder/swc",
   "version": "0.0.0",
   "napi": {
-    "name": "@builder/swc",
+    "name": "builder-swc",
     "triples": {}
   },
   "license": "MIT",

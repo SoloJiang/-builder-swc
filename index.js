@@ -1,13 +1,71 @@
 const { loadBinding } = require('@node-rs/helper')
+const path = require('path')
 
 /**
  * __dirname means load native addon from current dir
- * 'napi-test' is the name of native addon
+ * 'next-swc' is the name of native addon
  * the second arguments was decided by `napi.name` field in `package.json`
  * the third arguments was decided by `name` field in `package.json`
- * `loadBinding` helper will load `napi-test.[PLATFORM].node` from `__dirname` first
- * If failed to load addon, it will fallback to load from `napi-test-[PLATFORM]`
+ * `loadBinding` helper will load `next-swc.[PLATFORM].node` from `__dirname` first
+ * If failed to load addon, it will fallback to load from `next-swc-[PLATFORM]`
  */
-const mod = loadBinding(__dirname, 'napi-test', 'napi-test')
+const bindings = loadBinding(
+  __dirname,
+  'builder-swc',
+  '@builder/swc'
+)
 
-console.log(mod.sync(10));
+async function transform(src, options) {
+  const isModule = typeof src !== 'string'
+  options = options || {}
+
+  if (options && options.jsc && options.jsc.parser) {
+    options.jsc.parser.syntax = options.jsc.parser.syntax ? options.jsc.parser.syntax : 'ecmascript'
+  }
+
+  const { plugin, ...newOptions } = options
+
+  if (plugin) {
+    const m =
+      typeof src === 'string'
+        ? await this.parse(src, options && options.jsc && options.jsc.parser)
+        : src
+    return this.transform(plugin(m), newOptions)
+  }
+
+  return bindings.transform(
+    isModule ? JSON.stringify(src) : src,
+    isModule,
+    toBuffer(newOptions)
+  )
+}
+
+function transformSync(src, options) {
+  const isModule = typeof src !== 'string'
+  options = options || {}
+
+  if (options && options.jsc && options.jsc.parser) {
+    options.jsc.parser.syntax = options.jsc.parser.syntax ? options.jsc.parser.syntax : 'ecmascript'
+  }
+
+  const { plugin, ...newOptions } = options
+
+  if (plugin) {
+    const m =
+      typeof src === 'string' ? this.parseSync(src, options && options.jsc && options.jsc.parser) : src
+    return this.transformSync(plugin(m), newOptions)
+  }
+
+  return bindings.transformSync(
+    isModule ? JSON.stringify(src) : src,
+    isModule,
+    toBuffer(newOptions)
+  )
+}
+
+function toBuffer(t) {
+  return Buffer.from(JSON.stringify(t))
+}
+
+module.exports.transform = transform
+module.exports.transformSync = transformSync
