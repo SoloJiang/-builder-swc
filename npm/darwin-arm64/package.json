@@ -1,5 +1,5 @@
 {
-  "name": "aarch64-apple-darwin",
+  "name": "darwin-arm64",
   "version": "0.0.0",
   "os": [
     "win32"
@@ -7,9 +7,9 @@
   "cpu": [
     "x64"
   ],
-  "main": "napi-test.aarch64-apple-darwin.node",
+  "main": "napi-test.darwin-arm64.node",
   "files": [
-    "napi-test.aarch64-apple-darwin.node"
+    "napi-test.darwin-arm64.node"
   ],
   "license": "MIT",
   "engines": {

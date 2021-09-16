@@ -3,7 +3,9 @@
   "version": "0.0.0",
   "napi": {
     "name": "builder-swc",
-    "triples": {}
+    "triples": {
+      "defaults": true
+    }
   },
   "license": "MIT",
   "dependencies": {
