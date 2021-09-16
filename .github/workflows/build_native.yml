@@ -63,6 +63,7 @@ jobs:
           export CXX=$(xcrun -f clang++);
           SYSROOT=$(xcrun --sdk macosx --show-sdk-path);
           export CFLAGS="-isysroot $SYSROOT -isystem $SYSROOT";
+          rustup target install aarch64-apple-darwin;
       - name: 'Build'
         if: steps.binary-cache.outputs.cache-hit != true
         run: yarn build --target ${{ matrix.target }}
@@ -87,8 +88,8 @@ jobs:
       - uses: actions/download-artifact@v2.0.10
         with:
           name: builder-swc-binaries
-          path: native
+          path: ./native
       - uses: EndBug/add-and-commit@v7
         with:
-          add: 'native --force'
+          add: './native --force'
           message: 'Build builder-swc binaries'
