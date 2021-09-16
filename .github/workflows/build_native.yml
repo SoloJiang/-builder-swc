@@ -53,8 +53,8 @@ jobs:
         id: binary-cache
         uses: actions/cache@v2
         with:
-          path: packages/next/native/**
-          key: builder-swc-nightly-2021-08-12-${{ matrix.target }}-${{ hashFiles('.github/workflows/build_native.yml', 'packages/next/build/swc/**') }}
+          path: native/**
+          key: builder-swc-nightly-2021-08-12-${{ matrix.target }}-${{ hashFiles('.github/workflows/build_native.yml', './**') }}
       - name: Cross build aarch64 setup
         if: ${{ matrix.target == 'aarch64-apple-darwin' && steps.docs-change.outputs.DOCS_CHANGE != 'docs only change' }}
         run: |
@@ -68,12 +68,12 @@ jobs:
         run: yarn build-native --target ${{ matrix.target }}
         env:
           MACOSX_DEPLOYMENT_TARGET: '10.13'
-        working-directory: packages/next
+        working-directory: ./
       - name: Upload artifact
         uses: actions/upload-artifact@v2.2.4
         with:
           name: builder-swc-binaries
-          path: packages/next/native/builder-swc.${{ matrix.name }}.node
+          path: native/builder-swc.${{ matrix.name }}.node
       - name: Clear the cargo caches
         run: |
           cargo install cargo-cache --no-default-features --features ci-autoclean
@@ -87,8 +87,8 @@ jobs:
       - uses: actions/download-artifact@v2.0.10
         with:
           name: builder-swc-binaries
-          path: packages/next/native
+          path: native
       - uses: EndBug/add-and-commit@v7
         with:
-          add: 'packages/next/native --force'
+          add: 'native --force'
           message: 'Build builder-swc binaries'
